@@ -1,0 +1,21 @@
+---
+### used by main_build.yml
+kismet_url_tarball_src: "http://www.kismetwireless.net/code/kismet-2016-07-R1.tar.xz"
+kismet_version: "2016-07-R1"
+kismet_packaging: "tar.xz"
+checkinstall_deldoc: true
+checkinstall_nodoc: true
+localmirror_dir_name: "localmirror"
+
+### used by main_clean.yml and main_install.yml
+warpi_start_script: warpi.sh
+warpi_service_name: warpi
+kismet_wifi_nic: wlan0
+kismet_conf_log: /var/log/kismet
+#kismet_conf_logtypes: pcapdump,gpsxml,netxml,nettxt,alert
+kismet_conf_logtypes: pcapdump,netxml
+kismet_conf_logdefault: kismet
+kismet_conf_configdir: .kismet
+
+### remove dependencies
+kismet_remove_dependencies: false

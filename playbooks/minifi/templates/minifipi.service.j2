@@ -1,0 +1,12 @@
+[Unit]
+Description=Apache MiNiFi as service
+After=network.target
+
+[Service]
+Type=forking
+RemainAfterExit=yes
+#ExecStart=/etc/init.d/{{ minifi_service_name }} start
+ExecStart=/home/{{ ansible_ssh_user }}/minifi-{{ minifi_version }}/bin/minifi.sh start
+
+[Install]
+WantedBy=multi-user.target

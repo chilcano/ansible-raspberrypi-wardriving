@@ -1,0 +1,7 @@
+.DS_Store
+.vagrant
+*.retry
+*.deb
+*.txt
+*.bcn
+*.man

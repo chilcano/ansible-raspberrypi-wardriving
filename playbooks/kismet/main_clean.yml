@@ -1,0 +1,10 @@
+---
+- hosts: pikismets
+  become: yes
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - include: tasks/kill_process.yml
+    - include: tasks/clean_installation.yml

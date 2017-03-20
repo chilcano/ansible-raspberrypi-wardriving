@@ -1,0 +1,25 @@
+---
+- debug: msg="(( Run Kismet Server as systemd service. ))"
+
+- name: Copying '{{ warpi_start_script }}.j2' template.
+  template:
+    src: "templates/{{ warpi_start_script }}.j2"
+    dest: "/home/{{ ansible_ssh_user }}/{{ warpi_start_script }}"
+    mode: 0750
+
+- name: Copying '{{ warpi_service_name }}.service.j2' template.
+  template:
+    src: "templates/{{ warpi_service_name }}.service.j2"
+    dest: "/etc/systemd/system/{{ warpi_service_name }}.service"
+
+- name: Reloading '{{ warpi_service_name }}' systemd service.
+  command: systemctl daemon-reload
+
+- name: Starting '{{ warpi_service_name }}' systemd service.
+  service:
+    name: "{{ warpi_service_name }}"
+    enabled: yes
+    state: reloaded
+
+- debug:
+    msg: "Service '{{ warpi_service_name }}' started successfully. Now Kismet is sending events on 2501 port ( nc -vz localhost 2501 )"

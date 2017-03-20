@@ -1,0 +1,12 @@
+---
+- hosts: pikismets
+  become: yes
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - include: tasks/kill_process.yml
+    - include: tasks/clean_installation.yml
+    - include: tasks/install_from_deb.yml
+    - include: tasks/run_as_systemd.yml

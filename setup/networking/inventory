@@ -1,0 +1,11 @@
+[pis]
+192.168.0.17
+192.168.0.18
+192.168.0.19
+192.168.0.20
+
+[pis:vars]
+#ansible_ssh_user=pi
+ansible_ssh_user=picuy
+ansible_ssh_user_new=picuy
+path_to_ssh_key=/Users/Chilcano/.ssh/id_rsa.pub

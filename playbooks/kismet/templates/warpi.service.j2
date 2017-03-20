@@ -1,0 +1,10 @@
+[Unit]
+Description=Enable monitor mode and manage Kismet Server as service
+After=network.target auditd.service
+
+[Service]
+SuccessExitStatus=0 1
+ExecStart=/home/{{ ansible_ssh_user }}/{{ warpi_start_script }}
+
+[Install]
+WantedBy=multi-user.target

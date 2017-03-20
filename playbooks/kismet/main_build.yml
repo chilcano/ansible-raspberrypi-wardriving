@@ -1,0 +1,22 @@
+---
+- hosts: pibuilder
+  become: yes
+
+  vars_files:
+    - vars.yml
+
+  roles:
+    - role: geerlingguy.apache
+      apache_listen_ip: "*"
+      apache_listen_port: 80
+      apache_remove_default_vhost: true
+      apache_vhosts:
+        - servername: "rpi17.intix.info"
+          documentroot: "/var/www/html"
+          allow_override: "all"
+          options: "+Indexes +FollowSymLinks"
+      apache_state: started
+
+  tasks:
+    - include: tasks/build.yml
+    - include: tasks/localmirror.yml

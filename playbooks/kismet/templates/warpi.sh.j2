@@ -1,0 +1,22 @@
+#!/bin/sh
+# Shell script to enable monitor mode in WLAN and start Kismet Server
+# by Chilcano
+
+if [iwconfig {{ kismet_wifi_nic }} | grep -q "Mode:Monitor"]; then
+  # Monitor mode found, restoring
+  ifconfig {{ kismet_wifi_nic }} down
+  iwconfig {{ kismet_wifi_nic }} mode Managed
+  ifconfig {{ kismet_wifi_nic }} up
+  # Bringing monitor mode again
+  ifconfig {{ kismet_wifi_nic }} down
+  iwconfig {{ kismet_wifi_nic }} mode Monitor
+  #ifconfig {{ kismet_wifi_nic }} up
+else
+  # Bringing monitor mode
+  ifconfig {{ kismet_wifi_nic }} down
+  iwconfig {{ kismet_wifi_nic }} mode Monitor
+  #ifconfig {{ kismet_wifi_nic }} up
+fi
+
+# Starting kismet_server
+kismet_server

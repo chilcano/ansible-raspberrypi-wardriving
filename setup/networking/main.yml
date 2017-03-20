@@ -1,0 +1,55 @@
+---
+- hosts: pis
+  become: yes
+
+  vars_files:
+    - vars.yml
+
+  roles:
+    - role: mikolak.raspi-config
+      raspi_config_update_packages: no
+      raspi_config_expanded_filesystem: yes
+      raspi_config_hostname: "{{ mac_address_mapping[ hostvars[ inventory_hostname ].ansible_default_ipv4.macaddress ].name }}"
+      raspi_config_ensure_optimal_cpu_params: no
+      raspi_config_replace_user:
+        name: "{{ ansible_ssh_user_new }}"
+        path_to_ssh_key: "{{ path_to_ssh_key }}"
+      raspi_config_fail_on_auth_test: no
+
+  tasks:
+    - name: Set the current MAC address for eth0.
+      set_fact:
+        dramble_mac_address: "{{ hostvars[inventory_hostname].ansible_default_ipv4.macaddress }}"
+
+    - name: Set variables based on eth0 MAC address.
+      set_fact:
+        dramble_hostname: "{{ mac_address_mapping[dramble_mac_address].name }}"
+        dramble_ip_address: "{{ mac_address_mapping[dramble_mac_address].ip }}"
+        dramble_gateway_eth0: "{{ gateway.eth0 }}"
+
+    - name: Set up networking-related files.
+      template:
+        src: "templates/{{ item.template }}"
+        dest: "{{ item.dest }}"
+        mode: 0644
+      with_items:
+        #- { template: hostname.j2, dest: /etc/hostname }
+        - { template: hosts.j2, dest: /etc/hosts }
+        - { template: interfaces.j2, dest: /etc/network/interfaces }
+        - { template: resolv.conf.j2, dest: /etc/resolv.conf }
+        - { template: dhcpcd.conf.j2, dest: /etc/dhcpcd.conf }
+      notify:
+        - update hostname
+        - delete dhcp leases
+
+  handlers:
+    - name: update hostname
+      command: "hostname {{ dramble_hostname }}"
+
+    - name: delete dhcp leases
+      file:
+        path: /var/lib/dhcp/dhclient.leases
+        state: absent
+      with_items:
+        - /var/lib/dhcp/dhclient.leases
+        - /var/lib/dhcpcd5/dhcpcd-eth0.lease

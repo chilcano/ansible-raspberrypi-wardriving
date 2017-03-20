@@ -1,0 +1,41 @@
+---
+- debug: msg="(( Clean MiNiFi installation. ))"
+
+- name: Check if '{{ minifi_service_name }}.service' systemd file exists.
+  stat: path="/etc/systemd/system/{{ minifi_service_name }}.service"
+  register: my_systemd_service_file
+
+- name: Stopping and disabling '{{ minifi_service_name }}.service' systemd.
+  service:
+    name: "{{ minifi_service_name }}"
+    enabled: no
+    state: stopped
+  when: my_systemd_service_file.stat.exists
+
+- find:
+    paths:
+      - "/home/{{ ansible_ssh_user }}/"
+      - "/etc/init.d/"
+      - "/etc/systemd/system/"
+    patterns: "^(minifi|{{ minifi_service_name }})(.*)$"
+    use_regex: True
+  register: my_files_to_cleanup
+
+- name: Deleting all related MiNiFi files.
+  file:
+    name: "{{ item.path }}"
+    state: absent
+  with_items: "{{ my_files_to_cleanup.files }}"
+
+- name: Deleting MiNiFi uncompress folder.
+  file:
+    name: "/home/{{ ansible_ssh_user }}/minifi-{{ minifi_version }}"
+    state: absent
+
+- name: Uninstalling MiNiFi dependencies.
+  apt:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - oracle-java8-jdk
+  when: "{{ minifi_remove_dependencies }}"

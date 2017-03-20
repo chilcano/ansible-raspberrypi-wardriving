@@ -1,0 +1,139 @@
+---
+- debug: msg="(( Build Kismet from src tarball. ))"
+
+- name: Check if Kismet tarball has already been downloaded.
+  stat: path="/home/{{ ansible_ssh_user }}/kismet-{{ kismet_version }}.{{ kismet_packaging }}"
+  register: my_kismet_tarball
+
+- name: Download Kismet src tarball.
+  get_url:
+    url: "{{ kismet_url_tarball_src }}"
+    dest: "/home/{{ ansible_ssh_user }}/"
+  when: not my_kismet_tarball.stat.exists
+
+- name: Unarchive Kismet src tarball.
+  unarchive:
+    src: "/home/{{ ansible_ssh_user }}/kismet-{{ kismet_version }}.{{ kismet_packaging }}"
+    dest: "/home/{{ ansible_ssh_user }}/"
+    copy: no
+
+- name: Update Raspberry Pi.
+  apt:
+    upgrade: dist
+    update_cache: yes
+    cache_valid_time: 360000  # 100 hours
+
+- name: APT install dependencies for building Kismet.
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - libncurses5-dev
+    - libpcap-dev
+    - libpcre3-dev
+    - libnl-dev
+
+- debug: msg="Starting Kismet compilation."
+
+- name: Check if Makefile has already been created.
+  stat: path="/home/{{ ansible_ssh_user }}/kismet-{{ kismet_version }}/Makefile"
+  register: my_makefile
+
+- name: Create Makefile.
+  command: ./configure
+  args:
+    chdir: /home/{{ ansible_ssh_user }}/kismet-{{ kismet_version }}
+
+- name: Make dependencies.
+  command: make dep
+  args:
+    chdir: /home/{{ ansible_ssh_user }}/kismet-{{ kismet_version }}
+
+- name: Make plugins.
+  command: make plugins
+  args:
+    chdir: /home/{{ ansible_ssh_user }}/kismet-{{ kismet_version }}
+
+- debug: msg="The next process (make) will take long time ... grab one coffee."
+
+- name: Make objects.
+  command: make
+  args:
+    chdir: /home/{{ ansible_ssh_user }}/kismet-{{ kismet_version }}
+
+- name: Delete 'docs' and 'doc-pack' folders.
+  file:
+    path: "/home/{{ ansible_ssh_user }}/kismet-{{ kismet_version }}/{{ item }}"
+    state: absent
+  with_items:
+    - docs
+    - doc-pak
+  when: ({{ checkinstall_deldoc }}) and ({{ checkinstall_nodoc }})
+
+- name: Delete 'kismet.conf' and 'kismet_drone.conf' files placed for 'make install' previously.
+  file:
+    path: "/usr/local/etc/{{ item }}"
+    state: absent
+  with_items:
+    - kismet.conf
+    - kismet_drone.conf
+
+- name: Copy 'description-pak' file.
+  template:
+    src: templates/description-pak.j2
+    dest: "/home/{{ ansible_ssh_user }}/kismet-{{ kismet_version }}/description-pak"
+
+- name: Run 'checkinstall' and 'make install'.
+  command: >
+    /bin/bash -c '
+    echo |
+    checkinstall
+    --maintainer="Chilcano \\<chilcano@intix.info\\>"
+    --pkgname=kismet
+    --pkgversion="2016-07"
+    --pkgrelease="R1"
+    --pkglicense="GPL"
+    --pkggroup="net"
+    --pkgarch=armhf
+    --pkgsource="https://www.kismetwireless.net/kismet.git"
+    --pkgaltsource="http://www.kismetwireless.net/index.shtml"
+    --requires="libncurses5-dev,libpcap-dev,libpcre3-dev,libnl-dev"
+    --provides="kismet"
+    --deldesc=no
+    --delspec=yes
+    --backup=no
+    --reset-uids=yes
+    --deldoc=yes
+    --nodoc
+    --install=no
+    --fstrans=no
+    --showinstall=no
+    --backup=no
+    -D
+    -d0 make suidinstall'
+  args:
+    chdir: /home/{{ ansible_ssh_user }}/kismet-{{ kismet_version }}
+    creates: kismet_{{ kismet_version }}_armhf.deb
+  when: ({{ checkinstall_deldoc }}) and ({{ checkinstall_nodoc }})
+
+#### repeat same process to get .deb for kismet-plugins
+#### https://gist.github.com/mapcentia/1f2d8a6b4369beb1c930
+
+- debug: msg="Copying 'deb' from RPi to 'host' and HTTPd 'localmirror'."
+
+- fetch:
+    src: "/home/{{ ansible_ssh_user }}/kismet-{{ kismet_version }}/kismet_{{ kismet_version }}_armhf.deb"
+    dest: "/Users/Chilcano/1github-repo/raspberry-pi-dramble/"
+    flat: yes
+
+- file:
+    path: /var/www/html/{{ localmirror_dir_name }}
+    state: directory
+    recurse: yes
+
+- copy:
+    src: "/home/{{ ansible_ssh_user }}/kismet-{{ kismet_version }}/kismet_{{ kismet_version }}_armhf.deb"
+    dest: "/var/www/html/{{ localmirror_dir_name }}/kismet_{{ kismet_version }}_armhf.deb"
+    remote_src: true
+  notify:
+      - restart apache

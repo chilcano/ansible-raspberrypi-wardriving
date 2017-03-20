@@ -1,0 +1,18 @@
+---
+- debug: msg="(( Killing Kismet process. ))"
+
+- name: Looking for the 'kistmet_server' process.
+  command: pgrep kismet_server
+  register: my_kismet_server_process_result
+  ignore_errors: yes
+  no_log: True
+
+- name: Killing 'kistmet_server' process.
+  command: killall kismet_server
+  when: my_kismet_server_process_result.rc == 0
+  ignore_errors: yes
+  no_log: True
+
+- debug:
+    msg: "The 'kismet_server' processes was killed !!!"
+  when: my_kismet_server_process_result.rc == 0

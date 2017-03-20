@@ -1,0 +1,106 @@
+---
+- debug: msg="(( Download and Install Kismet built 'deb' package. ))"
+
+- name: Check if Kismet binary has already been downloaded.
+  stat: path="/home/{{ ansible_ssh_user }}/kismet_{{ kismet_version }}_armhf.deb"
+  register: my_kismet_binary
+
+- name: Defining fact 'kismet_url_bin_installer'.
+  set_fact:
+    kismet_url_bin_installer: "http://{{ groups['pibuilder'][0] }}/{{ localmirror_dir_name }}/kismet_{{ kismet_version }}_armhf.deb"
+
+- name: Download Kismet binary installer from '{{ kismet_url_bin_installer }}'.
+  get_url:
+    url: "{{ kismet_url_bin_installer }}"
+    dest: "/home/{{ ansible_ssh_user }}/"
+  when: not my_kismet_binary.stat.exists
+
+- name: Update Raspberry Pi.
+  apt:
+    upgrade: dist
+    update_cache: yes
+    cache_valid_time: 360000  # 100 hours
+
+- name: Install dependencies required for Kismet.
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - libncurses5-dev
+    - libpcap-dev
+    - libpcre3-dev
+    - libnl-dev
+
+- name: Install downloaded Kismet '.deb' binary.
+  apt:
+    deb: /home/{{ ansible_ssh_user }}/kismet_{{ kismet_version }}_armhf.deb
+    state: present
+
+- name: Check if Wireshark Manufacturer file has already been downloaded.
+  stat: path="/usr/share/wireshark/manuf"
+  register: my_manuf_file
+
+- name: Create Wireshark Manufacturer directory.
+  file:
+    path: "/usr/share/wireshark/"
+    state: directory
+    recurse: yes
+
+- name: Downloading Wireshark Manufacturer file.
+  get_url:
+    url: "http://anonsvn.wireshark.org/wireshark/trunk/manuf"
+    dest: "/usr/share/wireshark/manuf"
+    force: yes
+
+- name: Creating '{{ kismet_conf_log }}' folder.
+  file:
+    path: "{{ kismet_conf_log }}"
+    state: directory
+    recurse: yes
+    owner: "{{ ansible_ssh_user }}"
+
+- name: Creating '{{ kismet_conf_configdir }}' folder.
+  file:
+    path: "/home/{{ ansible_ssh_user }}/{{ kismet_conf_configdir }}"
+    state: directory
+    recurse: yes
+    owner: "{{ ansible_ssh_user }}"
+
+- name: Creating 'ssid_map.conf' and 'tag.conf' files.
+  file:
+    path: "/home/{{ ansible_ssh_user }}/{{ kismet_conf_configdir }}/{{ item }}"
+    state: touch
+    owner: "{{ ansible_ssh_user }}"
+  with_items:
+    - ssid_map.conf
+    - tag.conf
+
+- name: Copying 'kismet.conf' and 'kismet_drone.conf' configuration files.
+  template:
+    src: "templates/{{ item.template }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { template: kismet.conf.j2, dest: /usr/local/etc/kismet.conf }
+    - { template: kismet_drone.conf.j2, dest: /usr/local/etc/kismet_drone.conf }
+
+- name: Creating 'kismet' group.
+  group:
+    name: kismet
+    state: present
+
+- name: Adding user '{{ ansible_ssh_user }}' to 'kismet' group.
+  user:
+    name: "{{ ansible_ssh_user }}"
+    groups: kismet
+    append: yes
+
+- name: Setting suidroot to Kismet executables.
+  file:
+    path: "/usr/local/bin/{{ item.name }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - { name: kismet, mode: "u-w" }
+    - { name: kismet_client, mode: "u-w" }
+    - { name: kismet_drone, mode: "u-w" }
+    - { name: kismet_server, mode: "u-w" }
+    - { name: kismet_capture, mode: "u+s,o-r" }

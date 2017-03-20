@@ -1,0 +1,15 @@
+---
+### used by main_build.yml
+minifi_url_tarball_src: "http://www.minifiwireless.net/code/minifi-2016-07-R1.tar.xz"
+### samples:
+# http://apache.mirror.anlx.net/nifi/minifi/0.1.0/minifi-0.1.0-bin.tar.gz
+# https://public-repo-1.hortonworks.com/HDF/2.1.2.0/minifi-1.0.2.1.2.0-10-bin.tar.gz
+localmirror_dir_name: "localmirror"
+minifi_version: "0.1.0"
+minifi_packaging: "tar.gz"
+
+### used by main_clean.yml and main_install.yml
+minifi_service_name: minifipi
+
+### remove dependencies
+minifi_remove_dependencies: false

@@ -1,0 +1,2 @@
+---
+- include: playbooks/minifi/main_install.yml

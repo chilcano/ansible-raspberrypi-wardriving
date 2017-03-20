@@ -1,0 +1,8 @@
+---
+- debug: msg="(( Installing and running Apache HTTPd as localmirror. ))"
+
+- debug:
+    msg: >+
+      Running HTTPd localmirror on
+      'http://{{ ansible_hostname }}/{{ localmirror_dir_name }}/<package-name-here>'
+      'http://{{ ansible_eth0["ipv4"]["address"] }}/{{ localmirror_dir_name }}/<package-name-here>'

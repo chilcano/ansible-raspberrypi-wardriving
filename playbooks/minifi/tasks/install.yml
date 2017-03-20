@@ -1,0 +1,35 @@
+---
+- debug: msg="(( Download and Install Apache MiNiFi. ))"
+
+- name: Check if MiNiFi binary has already been downloaded.
+  stat: path="/home/{{ ansible_ssh_user }}/minifi-{{ minifi_version }}-bin.{{ minifi_packaging }}"
+  register: my_minifi_binary
+
+- name: Defining fact 'minifi_url_bin_installer'.
+  set_fact:
+    minifi_url_bin_installer: "http://{{ groups['pibuilder'][0] }}/{{ localmirror_dir_name }}/minifi-{{ minifi_version }}-bin.{{ minifi_packaging }}"
+
+- name: Download MiNiFi binary installer from '{{ minifi_url_bin_installer }}'.
+  get_url:
+    url: "{{ minifi_url_bin_installer }}"
+    dest: "/home/{{ ansible_ssh_user }}/"
+  when: not my_minifi_binary.stat.exists
+
+- name: Update Raspberry Pi.
+  apt:
+    upgrade: dist
+    update_cache: yes
+    cache_valid_time: 360000  # 100 hours
+
+- name: Install dependencies required for MiNiFi.
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - oracle-java8-jdk
+
+- name: Unarchive MiNiFi binary tarball.
+  unarchive:
+    src: "/home/{{ ansible_ssh_user }}/minifi-{{ minifi_version }}-bin.{{ minifi_packaging }}"
+    dest: "/home/{{ ansible_ssh_user }}/"
+    copy: no

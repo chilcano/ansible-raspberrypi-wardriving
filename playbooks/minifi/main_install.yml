@@ -1,0 +1,11 @@
+---
+- hosts: piminifis
+  become: yes
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - include: tasks/clean.yml
+    - include: tasks/install.yml
+    - include: tasks/run.yml

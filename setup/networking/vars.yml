@@ -1,0 +1,28 @@
+---
+# Mapping of what hardware MAC addresses should be configured with specific IPs.
+mac_address_mapping:
+  "b8:27:eb:1e:12:63":
+    name: rpi17.intix.info
+    ip: "192.168.0.17"
+  "b8:27:eb:9c:c2:e3":
+    name: rpi18.intix.info
+    ip: "192.168.0.18"
+  "b8:27:eb:f0:f3:ea":
+    name: rpi19.intix.info
+    ip: "192.168.0.19"
+  "b8:27:eb:5a:b5:5d":
+    name: rpi20.intix.info
+    ip: "192.168.0.20"
+
+# Nameservers to use in resolv.conf.
+dns_nameservers:
+  - "8.8.8.8"
+  - "8.8.4.4"
+
+gateway:
+  eth0: "192.168.0.1"
+  wlan0: "192.168.0.1"
+
+rpi_nic_static:
+  eth0: false
+  wlan0: false
