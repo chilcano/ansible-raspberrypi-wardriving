@@ -5,7 +5,7 @@
 Further details in https://holisticsecurity.io
 
 
-# 2. Ansible Playbooks for building/compiling, installing and running Kismet on Rasoberry Pi.
+# 2. Ansible Playbooks for building/compiling, installing and running Kismet on Raspberry Pi.
 
 
 Connect 2 Raspberry Pi to your local LAN, make sure they have IP addresses assigned. You could use `fing` to discover those IP addresses. Both IP addresses will be used when configuring `ansible-raspberrypi-wardriving/inventory` and `ansible-raspberrypi-wardriving/playbooks/kismet/vars.yml`.
