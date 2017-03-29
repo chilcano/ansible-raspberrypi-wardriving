@@ -1,0 +1,13 @@
+---
+# role chilcano.kismet-rpi-build
+kismet_rpi_build_clean: false
+kismet_rpi_build_publish: false
+kismet_rpi_build_build: false
+# role chilcano.kismet-rpi-wardriving
+kismet_rpi_wardriving_clean: false
+kismet_rpi_wardriving_install: true
+kismet_rpi_wardriving_run: true
+# role chilcano.apache-minifi
+minifi_action_clean: false
+minifi_action_install: true
+minifi_action_run: true

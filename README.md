@@ -1,11 +1,11 @@
-# 1. Mass provisioning of Kismet and Apache MiNiFi in Raspberry Pi using Ansible.
+# Mass provisioning of Kismet and Apache MiNiFi in Raspberry Pi using Ansible.
 
 ![Mass provisioning of Kismet and Apache MiNiFi in Raspberry Pi using Ansible](https://github.com/chilcano/ansible-raspberrypi-wardriving/blob/master/images/mass-provisioning-kismet-minifi-raspberrypi-ansible-1-arch.png "Mass provisioning of Kismet and Apache MiNiFi in Raspberry Pi using Ansible")
 
 Further details in https://holisticsecurity.io
 
 
-# 2. Ansible Playbooks for building/compiling, installing and running Kismet on Raspberry Pi.
+## 1. Using Ansible Playbooks.
 
 
 Connect 2 Raspberry Pi to your local LAN, make sure they have IP addresses assigned. You could use `fing` to discover those IP addresses. Both IP addresses will be used when configuring `ansible-raspberrypi-wardriving/inventory` and `ansible-raspberrypi-wardriving/playbooks/kismet/vars.yml`.
@@ -78,7 +78,7 @@ kismet_conf_configdir: .kismet
 kismet_remove_dependencies: false
 ```
 
-And finally run the Ansibkle Playbook `ansible-raspberrypi-wardriving/main_kismet_install.yml`.
+And finally run the Ansible Playbook `ansible-raspberrypi-wardriving/main_kismet_install.yml`.
 ```
 $ ansible-playbook -i inventory main_kismet_install.yml -k
 ```
@@ -99,7 +99,69 @@ picuy@rpi18:/var/log/kismet $ sudo systemctl status warpi
 Mar 22 20:40:00 rpi18.intix.info warpi.sh[994]: INFO: Detected new probe network "<Any>", BSSID 14:10:9F:E5:6E:CF,
 ```
 
-## 2.3. References.
+## 2. Using 3 Ansible Roles.
+
+I've refactored all Ansible Playbooks/Tasks in this Github repo and I've created 3 (Ansible Roles)[https://galaxy.ansible.com/chilcano]. They are in Ansible Galaxy and are:
+
+__Ansible Role Kismet RPi Build (https://galaxy.ansible.com/chilcano/kismet-rpi-build)__
+
+An Ansible Role that builds / compiles from scratch and packs (Debian/Raspbian binary) Kismet on a Raspberry Pi. This Role provides the following features:
+
+- Download the Kismet source code.
+- Compile the source code in a Raspberry Pi.
+- Generate a Kismet Debian/Raspbian package suitable for Raspberry Pi (ARMv7).
+
+__Ansible Role Kismet RPi Wardriving (https://galaxy.ansible.com/chilcano/kismet-rpi-wardriving)__
+
+An Ansible Role that installs, configures and runs Kismet on a Raspberry Pi. This Role provides the following features:
+
+- Install Kismet and dependencies.
+- Configure Kismet by deploying an customized kismet.conf.
+- Download MAC Addresses Manufacturer List.
+- Enable monitor mode in the Raspberry Pi before starting Kismet.
+- Run Kismet as a systemd service.
+
+__Ansible Role Apache MiNiFi (https://galaxy.ansible.com/chilcano/apache-minifi)__
+
+An Ansible Role that installs, configures and runs Apache MiNiFi in tiny devices like a Raspberry Pi, although you can use it on any distro. This Role provides the following features:
+
+- Install Apache MiNiFi and Java SDK.
+- Configure Apache MiNiFi.
+- Run Apache MiNiFi as a systemd service.
+
+### 2.1. Using just 3 Ansible Roles.
+
+Install all Ansible Roles needed as below or using `requirements.yml` file:
+```
+$ sudo ansible-galaxy install geerlingguy.apache
+$ sudo ansible-galaxy install chilcano.kismet-rpi-build
+$ sudo ansible-galaxy install chilcano.kismet-rpi-wardriving
+$ sudo ansible-galaxy install chilcano.apache-minifi
+
+$ ansible-galaxy list
+
+- chilcano.apache-minifi, 1.0.1
+- chilcano.kismet-rpi-build, 1.0.4
+- chilcano.kismet-rpi-wardriving, 1.1.1
+- geerlingguy.apache, 2.0.1
+- knopki.locale, a1232f836b5514c58da381d9479640e40d874906
+- Stouts.hostname, 1.1.0
+- Stouts.timezone, 2.2.0
+```
+
+...and continue with this:
+```
+$ git clone https://github.com/chilcano/ansible-raspberrypi-wardriving --branch 2.0.0 --single-branch
+
+$ cd ansible-raspberrypi-wardriving
+
+$ ansible-playbook -i inventory main_all.yml -k
+```
+
+And that's it !.
+
+
+## 3. References.
 
 - (CheckInstall)[https://help.ubuntu.com/community/CheckInstall]
 - (Compiling things on Ubuntu the Easy Way)[https://help.ubuntu.com/community/CompilingEasyHowTo]

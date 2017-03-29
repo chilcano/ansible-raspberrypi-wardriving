@@ -1,0 +1,2 @@
+---
+- include: playbooks/main_all.yml

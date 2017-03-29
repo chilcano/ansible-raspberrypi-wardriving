@@ -1,0 +1,21 @@
+---
+- hosts: pibuilder
+  become: yes
+  vars_files:
+    - vars_all.yml
+  roles:
+    - { role: chilcano.kismet-rpi-build }
+
+- hosts: pikismets
+  become: yes
+  vars_files:
+    - vars_all.yml
+  roles:
+    - { role: chilcano.kismet-rpi-wardriving }
+
+- hosts: piminifis
+  become: yes
+  vars_files:
+    - vars_all.yml
+  roles:
+    - { role: chilcano.apache-minifi }
