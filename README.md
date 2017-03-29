@@ -25,7 +25,8 @@ $ cd ansible-raspberrypi-wardriving
 Update `ansible-raspberrypi-wardriving/inventory` with both IP addresses, for example, the IP `192.168.0.17` will be used to build/compile Kismet and where I will run Apache HTTPd, and IP `192.168.0.18` will be used to install and run Kismet.
 ```
 $ nano inventory
-
+```
+```yaml
 [pibuilder]
 192.168.0.17
 
@@ -53,7 +54,8 @@ ansible_ssh_user=pi
 If you want change some values related to Kismet and the installation process, you have to update the file `ansible-raspberrypi-wardriving/playbooks/kismet/vars.yml`, for example:
 ```
 $ nano playbooks/kismet/vars.yml
-
+```
+```yaml
 ---
 ### used by main_build.yml
 kismet_url_tarball_src: "http://www.kismetwireless.net/code/kismet-2016-07-R1.tar.xz"
