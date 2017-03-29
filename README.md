@@ -159,6 +159,8 @@ $ git tag -l
 1.0.0
 2.0.0
 
+$ git checkout tags/2.0.0 -b 2.0.0
+
 $ ansible-playbook -i inventory main_all.yml -k
 ```
 
