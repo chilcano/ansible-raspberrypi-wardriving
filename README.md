@@ -11,7 +11,7 @@ Further details in https://holisticsecurity.io
 Connect 2 Raspberry Pi to your local LAN, make sure they have IP addresses assigned. You could use `fing` to discover those IP addresses. Both IP addresses will be used when configuring `ansible-raspberrypi-wardriving/inventory` and `ansible-raspberrypi-wardriving/playbooks/kismet/vars.yml`.
 
 
-![Ansible Playbooks for building/compiling, installing and running Kismet on Rasoberry Pi](https://github.com/chilcano/ansible-raspberrypi-wardriving/blob/master/images/mass-provisioning-kismet-minifi-raspberrypi-ansible-2-pkg.png "Ansible Playbooks for building/compiling, installing and running Kismet on Rasoberry Pi")
+![Ansible Playbooks for building/compiling, installing and running Kismet on Raspberry Pi](https://github.com/chilcano/ansible-raspberrypi-wardriving/blob/master/images/mass-provisioning-kismet-minifi-raspberrypi-ansible-2-pkg.png "Ansible Playbooks for building/compiling, installing and running Kismet on Rasoberry Pi")
 
 
 The first Raspberry Pi will be used to build the Kismet binary from the previously downloaded source code, and the second Raspberry Pi will be where I install and run Kismet. This second one must have an additional WIFI usb connected.
@@ -101,7 +101,7 @@ Mar 22 20:40:00 rpi18.intix.info warpi.sh[994]: INFO: Detected new probe network
 
 ## 2. Using 3 Ansible Roles.
 
-I've refactored all Ansible Playbooks/Tasks in this Github repo and I've created 3 (Ansible Roles)[https://galaxy.ansible.com/chilcano]. They are in Ansible Galaxy and are:
+I've refactored all Ansible Playbooks/Tasks in this [Github repo](https://github.com/chilcano/ansible-raspberrypi-wardriving) and I've created 3 [Ansible Roles](https://galaxy.ansible.com/chilcano). They are in Ansible Galaxy and are:
 
 __Ansible Role Kismet RPi Build (https://galaxy.ansible.com/chilcano/kismet-rpi-build)__
 
