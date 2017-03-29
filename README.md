@@ -151,9 +151,13 @@ $ ansible-galaxy list
 
 ...and continue with this:
 ```
-$ git clone https://github.com/chilcano/ansible-raspberrypi-wardriving --branch 2.0.2 --single-branch
+$ git clone https://github.com/chilcano/ansible-raspberrypi-wardriving --branch 2.0.0 --single-branch
 
 $ cd ansible-raspberrypi-wardriving
+
+$ git tag -l
+1.0.0
+2.0.0
 
 $ ansible-playbook -i inventory main_all.yml -k
 ```
