@@ -151,7 +151,7 @@ $ ansible-galaxy list
 
 ...and continue with this:
 ```
-$ git clone https://github.com/chilcano/ansible-raspberrypi-wardriving --branch 2.0.0 --single-branch
+$ git clone https://github.com/chilcano/ansible-raspberrypi-wardriving --branch 2.0.2 --single-branch
 
 $ cd ansible-raspberrypi-wardriving
 
